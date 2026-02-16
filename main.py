@@ -1,22 +1,37 @@
 import asyncio
-import moteus
 import cv2
 from ultralytics import YOLO
 
-model = None
-def load_model():
-    return model if model else model := YOLO('yolo26n.pt')
+# Load the YOLO26 model
+model = YOLO('yolo26s.pt')
 
-async def main():
-    c1 = moteus.Controller(id=1)
-    c2 = moteus.Controller(id=2)
+cap = cv2.VideoCapture(0)
 
-    model = load_model()
+# Loop through the video frames
+while cap.isOpened():
+    # Read a frame from the video
+    success, frame = cap.read()
 
-    cam = cv2.VideoCapture(0)
+    if success:
+        # Run YOLO26 tracking on the frame, persisting tracks between frames
+        results = model.track(frame, persist=True)
 
-    
-    # ...
+        # Visualize the results on the frame
+        annotated_frame = results[0].plot()
 
-if __name__ == '__main__':
-    asyncio.run(main())
+        # print(results[0].boxes[1])
+        # break
+
+        # Display the annotated frame
+        cv2.imshow("YOLO26 Tracking", annotated_frame)
+
+        # Break the loop if 'q' is pressed
+        if cv2.waitKey(1) & 0xFF == ord("q"):
+            break
+    else:
+        # Break the loop if the end of the video is reached
+        break
+
+# Release the video capture object and close the display window
+cap.release()
+cv2.destroyAllWindows()

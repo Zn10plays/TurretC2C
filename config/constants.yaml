@@ -8,3 +8,8 @@ motors:
   motorReduction:
     - 10
     - 8
+
+  # limts
+  accelerationLimits:
+    - .5
+    - .25

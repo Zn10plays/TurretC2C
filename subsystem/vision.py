@@ -1,8 +1,7 @@
 import cv2
 import time
-import moteus
 from subsystem.structure import Subsystem
-from models.FramePacket import FramePacket, MotorPostions
+from models.FramePacket import FramePacket
 
 class CameraCapture(Subsystem):
     def __init__(self, bus, controller):
@@ -18,15 +17,9 @@ class CameraCapture(Subsystem):
 
             t_capture = time.monotonic()
 
-            result = await self.controller.set_position(
-                position=float("nan"), query=True)
-
-            motor_angle = result.values[moteus.Register.POSITION]
-
             packet = FramePacket(
                 image=frame,
                 timestamp=t_capture,
-                motor_angle=motor_angle,
             )
 
             await self.bus.publish("frame", packet)
