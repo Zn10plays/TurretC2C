@@ -1,5 +1,5 @@
 motors:
-  # motors always order of pitch, yaw
+  # motors order always in of pitch, yaw format
   motorIds:
     - 1
     - 2
