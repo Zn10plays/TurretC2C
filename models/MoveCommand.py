@@ -2,13 +2,13 @@ from dataclasses import dataclass
 from enum import Enum
 
 class CommandType(Enum):
-    FAULT = -1 # pray to aulla this does not go off
-    Coast = 0
-    Position = 1
-    Velocity = 2
-    Acceleration = 3
-    Torque = 4
-    Path = 5
+    FAULT = 1 # pray to aulla this does not go off
+
+    Coast = 2 # setpoints are null
+    Position = 3 # setpoints are in digerees
+    Velocity = 4 # deg/sec
+    Acceleration = 5 # deg/sec^2
+    Torque = 6 # Nm
 
 
 @dataclass
