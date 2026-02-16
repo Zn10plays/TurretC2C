@@ -1,0 +1,10 @@
+motors:
+  # motors always order of pitch, yaw
+  motorIds:
+    - 1
+    - 2
+
+  # reduction
+  motorReduction:
+    - 10
+    - 8
