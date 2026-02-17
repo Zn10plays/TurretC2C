@@ -13,11 +13,10 @@ class VisionSubsystem(Subsystem):
         self.cam = cv2.VideoCapture(self.config['vision']['cameraID'])
 
     async def start(self):
-        loop = asyncio.get_running_loop()
 
         while True:
-            ret, frame = await loop.run_in_executor(
-                None, self.cam.read
+            ret, frame = await asyncio.to_thread(
+                self.cam.read
             )
 
             if not ret:
