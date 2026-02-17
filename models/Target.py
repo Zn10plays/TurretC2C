@@ -2,8 +2,10 @@ from dataclasses import dataclass
 
 @dataclass
 class TargetPacket():
-    target_type: str
-    target_id: str
-    relative_pitch: float
-    relative_yaw: float
     timestamp: float
+    track_id: int | None
+    class_id: int
+    confidence: float
+    u: float
+    v: float
+    bbox: list[float]

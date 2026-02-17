@@ -13,3 +13,11 @@ motors:
   accelerationLimits:
     - .5
     - .25
+
+vision:
+  # camara parameters
+  cameraID: 0
+
+detection:
+  threshold: 0.8
+  modelPath: "weights/yolo26n.pt"

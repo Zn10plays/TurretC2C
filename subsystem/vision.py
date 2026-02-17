@@ -2,23 +2,32 @@ import cv2
 import time
 from subsystem.structure import Subsystem
 from models.FramePacket import FramePacket
+from utility.loader import load_config
+import asyncio
 
-class CameraCapture(Subsystem):
-    def __init__(self, bus, controller):
+class VisionSubsystem(Subsystem):
+    def __init__(self, bus):
         super().__init__(bus)
-        self.controller = controller
-        self.cam = cv2.VideoCapture(0)
+        self.config = load_config()
+
+        self.cam = cv2.VideoCapture(self.config['vision']['cameraID'])
 
     async def start(self):
+        loop = asyncio.get_running_loop()
+
         while True:
-            ret, frame = self.cam.read()
+            ret, frame = await loop.run_in_executor(
+                None, self.cam.read
+            )
+
             if not ret:
+                await asyncio.sleep(0.001)
                 continue
 
             t_capture = time.monotonic()
 
             packet = FramePacket(
-                image=frame,
+                frame=frame,
                 timestamp=t_capture,
             )
 
