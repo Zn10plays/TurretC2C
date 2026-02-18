@@ -6,7 +6,7 @@ import math
 import asyncio
 import moteus
 import time
-from models.MotorStatus import MotorPostionLog
+from models.MotorStatus import MotorPositionLog
 
 class MotorsSubsystem(Subsystem):
     def __init__(self, bus):
@@ -50,7 +50,7 @@ class MotorsSubsystem(Subsystem):
         velocity[0] = results[0].values[moteus.Register.VELOCITY]
         velocity[1] = results[1].values[moteus.Register.VELOCITY]
 
-        self.current_log = MotorPostionLog(
+        self.current_log = MotorPositionLog(
             timestamp, position, velocity
         )
 

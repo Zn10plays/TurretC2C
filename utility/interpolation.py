@@ -1,13 +1,13 @@
-from models.MotorStatus import MotorPostionLog
+from models.MotorStatus import MotorPositionLog
 import math
 from typing import Deque
 
-def interpolate_history_at_timestamp(self, query_ts: int, history) -> MotorPostionLog | None:
+def interpolate_history_at_timestamp(self, query_ts: int, history) -> MotorPositionLog | None:
         """
         Linearly interpolate motor position and velocity at the given timestamp (ns).
 
         Returns:
-            MotorPostionLog with interpolated values,
+            MotorPositionLog with interpolated values,
             or None if history is empty.
         """
 
@@ -67,7 +67,7 @@ def interpolate_history_at_timestamp(self, query_ts: int, history) -> MotorPosti
             else:
                 interp_velocity.append(v0 + alpha * (v1 - v0))
 
-        return MotorPostionLog(
+        return MotorPositionLog(
             timestamp=query_ts,
             position=interp_position,
             velocity=interp_velocity,
