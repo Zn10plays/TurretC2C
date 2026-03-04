@@ -1,5 +1,5 @@
 from subsystem.structure import Subsystem
-from utility.loader import load_config
+from utility.loader import load_config, is_raspberry_pi
 from models.MoveCommand import MoveCommand, CommandType
 from collections import deque
 import math
@@ -18,7 +18,14 @@ class MotorsSubsystem(Subsystem):
         self.command_type: CommandType = CommandType.Coast
         self.setpoints = [0, 0]
 
-        self.transport = moteus.get_singleton_transport()
+        if is_raspberry_pi():
+            import moteus_pi3hat
+
+            self.transport = moteus_pi3hat.Pi3HatRouter(
+                servo_bus_map={...},
+            ) 
+        else:
+            self.transport = moteus.get_singleton_transport()
 
         self.pitch_motor = moteus.Controller(id=self.config['motors']['motorIds'][0], transport=self.transport)
         self.yaw_motor = moteus.Controller(id=self.config['motors']['motorIds'][1], transport=self.transport)
