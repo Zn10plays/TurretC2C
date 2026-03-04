@@ -33,7 +33,7 @@ Key subtopic include:
 * Motors and Controllers
 * Vision
 * Concurrency 
-* subsystems
+* Subsystems
 
 #### Motors and Controllers
 There are two distinct motor controllers on the turret: 2 Moteus r4.11 and 1 Cytron 30A DC motor driver.
@@ -67,3 +67,21 @@ The project has a lot of moving parts that need to work concurrently, for exampl
 All of these tasks are blocking, and some are CPU intensive, therefore they must be parallelized in such a manner one does not effect another. 
 
 For IO bound task like CAN-FD communication, it is handled directly in Asyncio and the process works on other tasks when we wait for a message to be sent and received. 
+
+CPU heavy task are handled via multithreading. They are offloaded to a different core, breaking python's GIL, and calls to them are handled as asyncio blocking tasks, ie they are waited upon, and the program will switch to other tasks in the meantime.
+
+Logging and telemetry are also natively handled by asyncio, lets keep it this way.
+
+#### Subsystems
+We have the following subsystems in the project.
+* AI (Target Annotation)
+* BUS (Project Event BUS, this is not the CAN-FD interface)
+* Logger (data logging for development)
+* Vision (Cameras and frame collection)
+
+There is one more
+* Structure
+
+But this is just a interface to implement the rest of subsystem classes.
+
+Details on implementation are provided in **docs/** directory.
