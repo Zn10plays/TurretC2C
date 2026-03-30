@@ -16,7 +16,7 @@ async def main():
     subsystems = [
         MotorsSubsystem(bus),
         VisionSubsystem(bus),
-        AiAnnotateSubsystem(bus, process_pool),
+        # AiAnnotateSubsystem(bus, process_pool),
         LoggerSubsystem(bus)
     ]
 
