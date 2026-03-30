@@ -18,6 +18,7 @@ class MotorsSubsystem(Subsystem):
         self.command_type: CommandType = CommandType.Coast
         self.setpoints = [0, 0]
 
+        # dynamic import for pi, selects the correct transport
         if is_raspberry_pi():
             import moteus_pi3hat
 
@@ -27,11 +28,16 @@ class MotorsSubsystem(Subsystem):
         else:
             self.transport = moteus.get_singleton_transport()
 
-        self.pitch_motor = moteus.Controller(id=self.config['motors']['motorIds'][0], transport=self.transport)
-        self.yaw_motor = moteus.Controller(id=self.config['motors']['motorIds'][1], transport=self.transport)
+        self.pitch_motor = moteus.Controller(
+            id=self.config['motors']['motorIds'][0], 
+            transport=self.transport)
+        
+        self.yaw_motor = moteus.Controller(
+            id=self.config['motors']['motorIds'][1], 
+            transport=self.transport)
 
 
-        bus.subscribe('MoveCommand', self.follow_command)
+        bus.subscribe('MoveCommand', self.follow_command) # MoveCommand class
 
     def follow_command(self, orders: MoveCommand):
 
@@ -48,21 +54,18 @@ class MotorsSubsystem(Subsystem):
     async def update_status(self, results, publish: bool = True):
 
         timestamp = time.monotonic_ns()
-        position = [math.nan, math.nan]
-        velocity = [math.nan, math.nan]
+        position = [results[0].values[moteus.Register.POSITION], 
+                    results[1].values[moteus.Register.POSITION]]
         
-        position[0] = results[0].values[moteus.Register.POSITION]
-        position[1] = results[1].values[moteus.Register.POSITION]
-        
-        velocity[0] = results[0].values[moteus.Register.VELOCITY]
-        velocity[1] = results[1].values[moteus.Register.VELOCITY]
+        velocity = [results[0].values[moteus.Register.VELOCITY], 
+                    results[1].values[moteus.Register.VELOCITY]]
 
         self.current_log = MotorPositionLog(
             timestamp, position, velocity
         )
 
         if publish:
-            await self.bus.publish('motors', self.current_log)
+            await self.bus.publish('MotorLogs', self.current_log)
 
     async def start(self):
 
@@ -81,7 +84,8 @@ class MotorsSubsystem(Subsystem):
                 continue
 
             results = await self.transport.cycle([
-                self.pitch_motor.make_position(position=(self.setpoints[0] if self.command_type == CommandType.Position else math.nan),
+                self.pitch_motor.make_position(
+                    position=(self.setpoints[0] if self.command_type == CommandType.Position else math.nan),
                     velocity=(self.setpoints[0] if self.command_type == CommandType.Velocity else math.nan),
                     accel_limit=self.config['motors']['accelerationLimits'][0],
                     query=True),
