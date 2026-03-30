@@ -36,7 +36,6 @@ class MotorsSubsystem(Subsystem):
             id=self.config['motors']['motorIds'][1], 
             transport=self.transport)
 
-
         bus.subscribe('MoveCommand', self.follow_command) # MoveCommand class
 
     # updates setpoints with a command
@@ -57,11 +56,11 @@ class MotorsSubsystem(Subsystem):
     async def update_status(self, results, publish: bool = True):
 
         timestamp = time.monotonic_ns()
-        position = [results[0].values[moteus.Register.POSITION], 
-                    results[1].values[moteus.Register.POSITION]]
+        position = [results[0].values[moteus.Register.POSITION] / self.config.motors.motorReduction[0], 
+                    results[1].values[moteus.Register.POSITION] / self.config.motors.motorReduction[1]]
         
-        velocity = [results[0].values[moteus.Register.VELOCITY], 
-                    results[1].values[moteus.Register.VELOCITY]]
+        velocity = [results[0].values[moteus.Register.VELOCITY] / self.config.motors.motorReduction[0], 
+                    results[1].values[moteus.Register.VELOCITY] / self.config.motors.motorReduction[1]]
 
         if publish:
             await self.bus.publish('MotorLogs', MotorPositionLog(
@@ -86,14 +85,14 @@ class MotorsSubsystem(Subsystem):
 
             results = await self.transport.cycle([
                 self.pitch_motor.make_position(
-                    position=(self.setpoints[0] if self.command_type == CommandType.Position else math.nan),
-                    velocity=(self.setpoints[0] if self.command_type == CommandType.Velocity else math.nan),
+                    position=(self.setpoints[0] * self.config.motors.motorReduction[0] if self.command_type == CommandType.Position else math.nan),
+                    velocity=(self.setpoints[0] * self.config.motors.motorReduction[1] if self.command_type == CommandType.Velocity else math.nan),
                     accel_limit=self.config['motors']['accelerationLimits'][0],
                     query=True),
 
                 self.yaw_motor.make_position(
-                    position=(self.setpoints[1] if self.command_type == CommandType.Position else math.nan),
-                    velocity=(self.setpoints[1] if self.command_type == CommandType.Velocity else math.nan),
+                    position=(self.setpoints[1] * self.config.motors.motorReduction[0] if self.command_type == CommandType.Position else math.nan),
+                    velocity=(self.setpoints[1] * self.config.motors.motorReduction[1] if self.command_type == CommandType.Velocity else math.nan),
                     accel_limit=self.config['motors']['accelerationLimits'][1],
                     query=True),
             ])
