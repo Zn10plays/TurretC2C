@@ -46,6 +46,7 @@ class MotorsSubsystem(Subsystem):
             return
         
         if (orders.type == CommandType.FAULT):
+            print('fault detected stopping motors')
             self.e_stop = True
             return
 
