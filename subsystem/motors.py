@@ -1,7 +1,6 @@
 from subsystem.structure import Subsystem
 from utility.loader import load_config, is_raspberry_pi
 from models.MoveCommand import MoveCommand, CommandType
-from collections import deque
 import math
 import asyncio
 import moteus
@@ -28,6 +27,7 @@ class MotorsSubsystem(Subsystem):
         else:
             self.transport = moteus.get_singleton_transport()
 
+        # init controllers 
         self.pitch_motor = moteus.Controller(
             id=self.config['motors']['motorIds'][0], 
             transport=self.transport)
@@ -39,6 +39,7 @@ class MotorsSubsystem(Subsystem):
 
         bus.subscribe('MoveCommand', self.follow_command) # MoveCommand class
 
+    # updates setpoints with a command
     def follow_command(self, orders: MoveCommand):
 
         if (self.e_stop):
@@ -51,6 +52,7 @@ class MotorsSubsystem(Subsystem):
         self.command_type = orders.type
         self.setpoints = orders.setpoints
 
+    # helper to push logs to the internal eventbus
     async def update_status(self, results, publish: bool = True):
 
         timestamp = time.monotonic_ns()
@@ -60,12 +62,10 @@ class MotorsSubsystem(Subsystem):
         velocity = [results[0].values[moteus.Register.VELOCITY], 
                     results[1].values[moteus.Register.VELOCITY]]
 
-        self.current_log = MotorPositionLog(
-            timestamp, position, velocity
-        )
-
         if publish:
-            await self.bus.publish('MotorLogs', self.current_log)
+            await self.bus.publish('MotorLogs', MotorPositionLog(
+            timestamp, position, velocity
+        ))
 
     async def start(self):
 
