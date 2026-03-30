@@ -84,4 +84,4 @@ There is one more
 
 But this is just a interface to implement the rest of subsystem classes.
 
-Details on implementation are provided in **docs/** directory.
+Details on implementation on each subsystem is provided in **docs/** directory.
