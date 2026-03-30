@@ -8,7 +8,7 @@ class EventBus:
     def subscribe(self, topic, callback):
         self.subscribers[topic].append(callback)
 
-    async def publish(self, topic, data):
+    async def publish(self, topic: str, data: callable):
         if topic in self.subscribers:
             for callback in self.subscribers[topic]:
                 asyncio.create_task(callback(data))
