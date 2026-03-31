@@ -2,6 +2,8 @@ from subsystem.structure import Subsystem
 from enum import Enum
 import asyncio
 from models.MotorStatus import MotorPositionLog
+from utility.paths import get_next_setpoint
+from models.MoveCommand import CommandType
 import time
 
 class ControlMode(Enum):
@@ -9,7 +11,6 @@ class ControlMode(Enum):
     Survey: 2
     TeleOp: 3
     LockOn: 4
-
 
 class CommandSubsystem(Subsystem):
     def __init__(self, bus):
@@ -19,7 +20,7 @@ class CommandSubsystem(Subsystem):
         self.current_state = ControlMode.Idle
         
         self.bus.subscribe('ChangeControlState', self.update_control_state)
-        self.bus.subscribe('MotorLogs')
+        self.bus.subscribe('MotorLogs', self.update_current_motor_setpoints)
 
         # init 90 deg pitch, no yaw, no velocity
         self.current_turret_pos = MotorPositionLog(time.monotonic_ns(), [0.25, 0], [0, 0])
@@ -39,8 +40,11 @@ class CommandSubsystem(Subsystem):
                     # do nothing
                     pass
                 case ControlMode.Survey:
-                    # scan surrondings
-                    pass
+                    cmd = get_next_setpoint(
+                        self.current_turret_pos,
+                        mode=CommandType.Position  # or Velocity
+                    )
+                    self.bus.publish("MoveCommand", cmd)
                 case ControlMode.TeleOp:
                     # go to user command, or do nothing
                     # fire is always a user command
