@@ -21,3 +21,7 @@ vision:
 detection:
   threshold: 0.8
   modelPath: "weights/yolo26n.pt"
+
+Turret:
+  maxPitch: 45
+  minPitch: -10
