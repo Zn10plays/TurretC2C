@@ -5,7 +5,7 @@ class CommandType(Enum):
     FAULT = 1 # pray to aulla this does not go off
 
     Coast = 2 # setpoints are null
-    Position = 3 # setpoints are in digerees
+    Position = 3 # setpoints are in degrees
     Velocity = 4 # deg/sec
     Acceleration = 5 # deg/sec^2
     Torque = 6 # Nm

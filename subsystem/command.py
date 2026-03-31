@@ -2,8 +2,8 @@ from subsystem.structure import Subsystem
 from enum import Enum
 import asyncio
 from models.MotorStatus import MotorPositionLog
+from models.MoveCommand import CommandType, MoveCommand
 from utility.paths import get_next_setpoint
-from models.MoveCommand import CommandType
 import time
 
 class ControlMode(Enum):
@@ -26,6 +26,9 @@ class CommandSubsystem(Subsystem):
         self.current_turret_pos = MotorPositionLog(time.monotonic_ns(), [0.25, 0], [0, 0])
     
     def update_control_state(self, new_state: ControlMode):
+        # stop all previous move commands
+        self.bus.publish('MoveCommand', MoveCommand(CommandType.Coast, [0, 0]))
+        
         self.current_state = new_state
         pass
 
