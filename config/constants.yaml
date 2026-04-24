@@ -25,3 +25,22 @@ detection:
 Turret:
   maxPitch: 45
   minPitch: -10
+
+vision:
+  # "pylon" to use Basler — falls back to opencv if pypylon is not installed
+  backend: "pylon"
+
+  # --- Pylon options ---
+  pylonSerial: "12345678"       # omit to use first detected camera
+  pylonPixelFormat: "Mono8"     # Mono8 for max fps; Mono12 if bit depth needed
+  pylonExposureUs: 2000         # exposure in microseconds
+  pylonWidth: 2048              # full sensor; reduce for higher fps
+  pylonHeight: 1088
+  pylonOffsetX: 0
+  pylonOffsetY: 0
+
+  # --- OpenCV fallback options ---
+  cameraID: 0
+  opencvWidth: 1920
+  opencvHeight: 1080
+  opencvFps: 100
